@@ -36,10 +36,10 @@
         /* Simple spinner */
         .spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
-            width: 36px;
-            height: 36px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            border-left-color: #4f46e5;
+            border-left-color: #ffffff;
             animation: spin 1s ease infinite;
         }
         @keyframes spin {
@@ -57,11 +57,23 @@
         </header>
 
         <main>
-            <!-- Socratic Inquiry Section -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <!-- Dialogue/Chat History Section -->
+            <div id="dialogue-container" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hidden">
+                 <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-3">Our Dialogue</h2>
+                 <div id="dialogue-history" class="space-y-6"></div>
+            </div>
+
+            <!-- Loading Indicator for Model Response -->
+            <div id="loading-indicator" class="hidden mt-6 flex items-center text-gray-600 dark:text-gray-400">
+                <div class="spinner mr-3"></div>
+                <span>Socrates is pondering...</span>
+            </div>
+
+            <!-- User Input Section -->
+            <div class="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                 <div class="mb-4">
                     <label for="prompt-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Your Question</label>
-                    <textarea id="prompt-input" rows="5" class="w-full p-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition duration-150" placeholder="e.g., What is the derivative of x^2, and why?"></textarea>
+                    <textarea id="prompt-input" rows="4" class="w-full p-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition duration-150" placeholder="e.g., What is the derivative of x^2, and why?"></textarea>
                 </div>
                 <div class="flex justify-end">
                     <button id="generate-button" class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 transition duration-150 flex items-center">
@@ -90,19 +102,7 @@
                     </button>
                 </div>
             </div>
-
-            <!-- Response Output -->
-            <div id="response-container" class="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hidden">
-                 <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">Our Dialogue</h2>
-                 <div id="response-output" class="text-gray-700 dark:text-gray-300 prose prose-lg max-w-none"></div>
-            </div>
             
-            <!-- Loading Indicator -->
-            <div id="loading-indicator" class="text-center mt-8 hidden">
-                <div class="spinner mx-auto"></div>
-                <p class="text-gray-600 dark:text-gray-400 mt-2">Pondering your question...</p>
-            </div>
-
             <!-- Error Message Box -->
             <div id="error-message" class="hidden mt-8 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
                 <strong class="font-bold">A moment of difficulty:</strong>
@@ -118,9 +118,7 @@
                 <h3 id="modal-title" class="text-2xl font-bold text-gray-800 dark:text-white"></h3>
                 <button id="modal-close-button" class="text-gray-400 hover:text-gray-700 dark:hover:text-white text-3xl font-light leading-none">&times;</button>
             </div>
-            <div id="modal-content" class="prose prose-lg max-w-none dark:text-gray-300" style="max-height: 70vh; overflow-y: auto;">
-                <!-- Definition content will go here -->
-            </div>
+            <div id="modal-content" class="prose prose-lg max-w-none dark:text-gray-300" style="max-height: 70vh; overflow-y: auto;"></div>
         </div>
     </div>
 
@@ -128,8 +126,8 @@
         // --- Element Selectors ---
         const generateButton = document.getElementById('generate-button');
         const promptInput = document.getElementById('prompt-input');
-        const responseContainer = document.getElementById('response-container');
-        const responseOutput = document.getElementById('response-output');
+        const dialogueContainer = document.getElementById('dialogue-container');
+        const dialogueHistoryEl = document.getElementById('dialogue-history');
         const loadingIndicator = document.getElementById('loading-indicator');
         const errorMessage = document.getElementById('error-message');
         const errorText = document.getElementById('error-text');
@@ -142,51 +140,62 @@
         const modalCloseButton = document.getElementById('modal-close-button');
         const resourceButtons = document.querySelectorAll('.resource-button');
 
+        // --- State ---
+        let chatHistory = [];
+
         // --- Definitions Content ---
         const definitions = {
-            limit: {
-                title: "The Concept of a Limit",
-                content: `In mathematics, a **limit** is the value that a function "approaches" as the input "approaches" some value. Limits are essential to calculus and are used to define continuity, derivatives, and integrals.\n\nLet's consider a function $f(x)$. The limit of $f(x)$ as $x$ approaches a value $c$ is denoted as:\n\n$$ \\lim_{x \\to c} f(x) = L $$\n\nThis means that as $x$ gets arbitrarily close to $c$, the value of $f(x)$ gets arbitrarily close to $L$. It's important to note that the function does not have to be defined at $c$ for the limit to exist.`
-            },
-            derivative: {
-                title: "The Definition of a Derivative",
-                content: `The **derivative** of a function of a real variable measures the instantaneous rate of change of the function with respect to that variable. For a function $f(x)$, the derivative at a point $x$ is the slope of the tangent line to the graph of $f(x)$ at that point.\n\nThe derivative of a function $f$ at a point $x$ is commonly denoted as $f'(x)$ (read "f prime of x"). It is formally defined using limits as:\n\n$$ f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h} $$\n\nThis formula is called the **limit definition of the derivative**. It calculates the slope of the secant line between two points on the curve as the distance between them ($h$) approaches zero.`
-            },
-            integral: {
-                title: "Understanding Integrals",
-                content: `An **integral** is a mathematical object that can be interpreted as an area or a generalization of area. Integrals, together with derivatives, are the fundamental objects of calculus.\n\nThe **definite integral** of a function $f(x)$ from $a$ to $b$ is written as:\n\n$$ \\int_a^b f(x) \\,dx $$\n\nThis represents the signed area of the region in the $xy$-plane that is bounded on the $x$-axis by the vertical lines $x=a$ and $x=b$, and between the graph of $f(x)$ and the $x$-axis.\n\nThe **indefinite integral**, or antiderivative, is written as:\n\n$$ \\int f(x) \\,dx $$\n\nThis represents a family of functions whose derivative is $f(x)$. The Fundamental Theorem of Calculus connects these two concepts.`
-            }
+            limit: { title: "The Concept of a Limit", content: `In mathematics, a **limit** is the value that a function "approaches" as the input "approaches" some value. Limits are essential to calculus and are used to define continuity, derivatives, and integrals.\n\nLet's consider a function $f(x)$. The limit of $f(x)$ as $x$ approaches a value $c$ is denoted as:\n\n$$ \\lim_{x \\to c} f(x) = L $$\n\nThis means that as $x$ gets arbitrarily close to $c$, the value of $f(x)$ gets arbitrarily close to $L$. It's important to note that the function does not have to be defined at $c$ for the limit to exist.` },
+            derivative: { title: "The Definition of a Derivative", content: `The **derivative** of a function of a real variable measures the instantaneous rate of change of the function with respect to that variable. For a function $f(x)$, the derivative at a point $x$ is the slope of the tangent line to the graph of $f(x)$ at that point.\n\nThe derivative of a function $f$ at a point $x$ is commonly denoted as $f'(x)$ (read "f prime of x"). It is formally defined using limits as:\n\n$$ f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h} $$\n\nThis formula is called the **limit definition of the derivative**. It calculates the slope of the secant line between two points on the curve as the distance between them ($h$) approaches zero.` },
+            integral: { title: "Understanding Integrals", content: `An **integral** is a mathematical object that can be interpreted as an area or a generalization of area. Integrals, together with derivatives, are the fundamental objects of calculus.\n\nThe **definite integral** of a function $f(x)$ from $a$ to $b$ is written as:\n\n$$ \\int_a^b f(x) \\,dx $$\n\nThis represents the signed area of the region in the $xy$-plane that is bounded on the $x$-axis by the vertical lines $x=a$ and $x=b$, and between the graph of $f(x)$ and the $x$-axis.\n\nThe **indefinite integral**, or antiderivative, is written as:\n\n$$ \\int f(x) \\,dx $$\n\nThis represents a family of functions whose derivative is $f(x)$. The Fundamental Theorem of Calculus connects these two concepts.` }
         };
 
-        // --- Event Listener for the Generate Button ---
-        generateButton.addEventListener('click', async () => {
+        // --- Event Listeners ---
+        generateButton.addEventListener('click', handleInquiry);
+        promptInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                handleInquiry();
+            }
+        });
+
+        async function handleInquiry() {
             const userPrompt = promptInput.value.trim();
             if (!userPrompt) {
                 showError("A question must first be asked before a discovery can be made.");
                 return;
             }
+
+            // Add user message to UI and history
+            appendMessage('user', userPrompt);
+            chatHistory.push({ role: "user", parts: [{ text: userPrompt }] });
+            promptInput.value = ''; // Clear input field
+
+            // Show loading state and disable button
             loadingIndicator.classList.remove('hidden');
-            responseContainer.classList.add('hidden');
             errorMessage.classList.add('hidden');
             generateButton.disabled = true;
             generateButton.classList.add('opacity-50', 'cursor-not-allowed');
 
             try {
-                await callGeminiApi(userPrompt);
+                await callGeminiApi();
             } catch (error) {
                 console.error("Error calling Gemini API:", error);
                 showError(error.message || "An unknown obstacle has appeared on our path.");
+                // Remove the failed user message from history
+                chatHistory.pop();
             } finally {
+                // Hide loading state and re-enable button
                 loadingIndicator.classList.add('hidden');
                 generateButton.disabled = false;
                 generateButton.classList.remove('opacity-50', 'cursor-not-allowed');
             }
-        });
+        }
 
         /**
-         * Calls the Gemini API with the provided prompt and a Socratic persona.
+         * Calls the Gemini API with the current chat history.
          */
-        async function callGeminiApi(userPrompt) {
+        async function callGeminiApi() {
             const personaPrompt = `You are a Socratic calculus tutor for undergraduate students. Your name is Socrates. Your purpose is to guide students to discover answers for themselves, not to provide them directly. Always respond using the Socratic method.
 1.  **Acknowledge and Rephrase:** Start by acknowledging the student's question and perhaps rephrasing it to ensure understanding.
 2.  **Ask Guiding Questions:** Never give the final answer. Instead, ask a series of probing questions that break the problem down into smaller, manageable steps. Lead the student toward the key concepts they need to solve the problem.
@@ -194,23 +203,24 @@
 4.  **Use Analogies:** If a student is stuck, use simple analogies to explain complex concepts.
 5.  **Maintain Persona:** Your tone must be patient, wise, and encouraging. Address the student as 'young scholar', 'friend', or a similar term. Frame your responses as a shared journey of discovery.
 6.  **Formatting:** For any mathematical formulas or expressions, you MUST enclose them in single dollar signs for inline math (e.g., $f(x) = x^2$) or double dollar signs for block math (e.g., $$\\int_0^1 x^2 dx$$). This is crucial for rendering.
-Now, here is the student's question:`;
+Now, begin the dialogue. The first user question is:`;
 
-            const fullPrompt = `${personaPrompt}\n\n"${userPrompt}"`;
+            // Construct the request body from the chat history
+            const requestContents = JSON.parse(JSON.stringify(chatHistory));
+
+            // Prepend the persona prompt to the very first user message in the conversation
+            if (requestContents.length === 1 && requestContents[0].role === 'user') {
+                requestContents[0].parts[0].text = `${personaPrompt}\n\n"${requestContents[0].parts[0].text}"`;
+            }
             
-            // --- API Key ---
-            // IMPORTANT: Replace "YOUR_API_KEY_HERE" with your actual Google AI Studio API key.
-            // You can get a free key from https://aistudio.google.com/app/apikey
             const apiKey = "AIzaSyClqwGPmPxd13JFi45j1cNsk3n6HY7--9E";
-
             if (apiKey === "YOUR_API_KEY_HERE") {
                 showError("Please replace 'YOUR_API_KEY_HERE' with your actual API key in the code.");
                 throw new Error("API key not set.");
             }
-
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
-            const requestBody = { contents: [{ parts: [{ text: fullPrompt }] }] };
+            const requestBody = { contents: requestContents };
 
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -227,7 +237,9 @@ Now, here is the student's question:`;
             
             if (responseData.candidates?.[0]?.content?.parts?.[0]) {
                 const generatedText = responseData.candidates[0].content.parts[0].text;
-                displayResponse(generatedText);
+                // Add model message to UI and history
+                appendMessage('model', generatedText);
+                chatHistory.push({ role: "model", parts: [{ text: generatedText }] });
             } else {
                 console.error("Unexpected API response structure:", responseData);
                 throw new Error("Could not extract text from the API response.");
@@ -235,24 +247,45 @@ Now, here is the student's question:`;
         }
         
         /**
-         * Displays the generated response, parsing Markdown and rendering LaTeX.
+         * Appends a message to the dialogue UI.
          */
-        function displayResponse(text) {
-            responseOutput.innerHTML = marked.parse(text);
-            if (window.renderMathInElement) {
-                window.renderMathInElement(responseOutput, {
-                    delimiters: [
-                        {left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false},
-                        {left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true}
-                    ]
-                });
+        function appendMessage(role, text) {
+            const messageWrapper = document.createElement('div');
+            
+            const roleIndicator = document.createElement('div');
+            roleIndicator.classList.add('font-bold', 'text-sm', 'mb-1', 'capitalize');
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.classList.add('prose', 'prose-lg', 'max-w-none', 'dark:text-gray-300');
+
+            if (role === 'user') {
+                roleIndicator.textContent = 'You';
+                roleIndicator.classList.add('text-indigo-600', 'dark:text-indigo-400');
+                contentDiv.textContent = text;
+            } else { // 'model'
+                roleIndicator.textContent = 'Socrates';
+                roleIndicator.classList.add('text-gray-700', 'dark:text-gray-400');
+                contentDiv.innerHTML = marked.parse(text);
+                if (window.renderMathInElement) {
+                    window.renderMathInElement(contentDiv, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false},
+                            {left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true}
+                        ]
+                    });
+                }
             }
-            responseContainer.classList.remove('hidden');
+            
+            messageWrapper.appendChild(roleIndicator);
+            messageWrapper.appendChild(contentDiv);
+            dialogueHistoryEl.appendChild(messageWrapper);
+
+            if (dialogueContainer.classList.contains('hidden')) {
+                dialogueContainer.classList.remove('hidden');
+            }
+            messageWrapper.scrollIntoView({ behavior: 'smooth', block: 'end' });
         }
 
-        /**
-         * Displays an error message to the user.
-         */
         function showError(message) {
             errorText.textContent = message;
             errorMessage.classList.remove('hidden');
@@ -262,7 +295,6 @@ Now, here is the student's question:`;
         function openModal(key) {
             const definition = definitions[key];
             if (!definition) return;
-
             modalTitle.textContent = definition.title;
             modalContent.innerHTML = marked.parse(definition.content);
             if (window.renderMathInElement) {
@@ -273,9 +305,7 @@ Now, here is the student's question:`;
                     ]
                 });
             }
-
             modal.classList.remove('hidden');
-            // Animate modal entrance
             setTimeout(() => {
                 modalPanel.classList.remove('scale-95', 'opacity-0');
                 modalPanel.classList.add('scale-100', 'opacity-100');
@@ -283,31 +313,15 @@ Now, here is the student's question:`;
         }
 
         function closeModal() {
-            // Animate modal exit
             modalPanel.classList.remove('scale-100', 'opacity-100');
             modalPanel.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 300); // Match duration in CSS
+            setTimeout(() => modal.classList.add('hidden'), 300);
         }
 
-        resourceButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                openModal(button.dataset.definition);
-            });
-        });
-
+        resourceButtons.forEach(button => button.addEventListener('click', () => openModal(button.dataset.definition)));
         modalCloseButton.addEventListener('click', closeModal);
-        modal.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                closeModal();
-            }
-        });
-        document.addEventListener('keydown', (event) => {
-            if (event.key === "Escape" && !modal.classList.contains('hidden')) {
-                closeModal();
-            }
-        });
+        modal.addEventListener('click', (event) => { if (event.target === modal) closeModal(); });
+        document.addEventListener('keydown', (event) => { if (event.key === "Escape" && !modal.classList.contains('hidden')) closeModal(); });
     </script>
 </body>
 </html>
