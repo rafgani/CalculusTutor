@@ -202,17 +202,8 @@
 3.  **Encourage Reasoning:** Ask 'why' questions. For example, 'Why did you choose that method?' or 'What does that result tell us?'.
 4.  **Use Analogies:** If a student is stuck, use simple analogies to explain complex concepts.
 5.  **Maintain Persona:** Your tone must be patient, wise, and encouraging. Address the student as 'young scholar', 'friend', or a similar term. Frame your responses as a shared journey of discovery.
-6.  **Formatting:** For any mathematical formulas or expressions, you MUST enclose them in single dollar signs for inline math (e.g., $f(x) = x^2$) or double dollar signs for block math (e.g., $$\\int_0^1 x^2 dx$$). This is crucial for rendering.
-Now, begin the dialogue. The first user question is:`;
+6.  **Formatting:** For any mathematical formulas or expressions, you MUST enclose them in single dollar signs for inline math (e.g., $f(x) = x^2$) or double dollar signs for block math (e.g., $$\\int_0^1 x^2 dx$$). This is crucial for rendering.`;
 
-            // Construct the request body from the chat history
-            const requestContents = JSON.parse(JSON.stringify(chatHistory));
-
-            // Prepend the persona prompt to the very first user message in the conversation
-            if (requestContents.length === 1 && requestContents[0].role === 'user') {
-                requestContents[0].parts[0].text = `${personaPrompt}\n\n"${requestContents[0].parts[0].text}"`;
-            }
-            
             const apiKey = "AIzaSyClqwGPmPxd13JFi45j1cNsk3n6HY7--9E";
             if (apiKey === "YOUR_API_KEY_HERE") {
                 showError("Please replace 'YOUR_API_KEY_HERE' with your actual API key in the code.");
@@ -220,7 +211,15 @@ Now, begin the dialogue. The first user question is:`;
             }
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
-            const requestBody = { contents: requestContents };
+            // The entire chat history is sent, and the persona is sent as a system instruction.
+            const requestBody = {
+                contents: chatHistory,
+                systemInstruction: {
+                    parts: [{
+                        text: personaPrompt
+                    }]
+                }
+            };
 
             const response = await fetch(apiUrl, {
                 method: 'POST',
