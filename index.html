@@ -22,10 +22,10 @@
         .dark .prose {
             color: #d1d5db;
         }
-        .prose h1, .prose h2, .prose h3 {
+        .prose h1, .prose h2, .prose h3, .prose h4 {
             color: #1f2937;
         }
-        .dark .prose h1, .dark .prose h2, .dark .prose h3 {
+        .dark .prose h1, .dark .prose h2, .dark .prose h3, .dark .prose h4 {
             color: #f9fafb;
         }
         .katex-display {
@@ -53,53 +53,55 @@
     <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-3xl">
         <header class="text-center mb-8">
             <h1 class="text-4xl sm:text-5xl font-bold text-gray-800 dark:text-white">The Socratic Calculus Tutor</h1>
-            <p class="text-gray-600 dark:text-gray-400 mt-2">Pose a question, and let us embark on a journey of discovery together.</p>
+            <p class="text-gray-600 dark:text-gray-400 mt-2">Let us reason through the tasks below.</p>
         </header>
 
-        <main>
-            <!-- Dialogue/Chat History Section -->
-            <div id="dialogue-container" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hidden">
-                 <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-3">Our Dialogue</h2>
-                 <div id="dialogue-history" class="space-y-6"></div>
-            </div>
-
-            <!-- Loading Indicator for Model Response -->
-            <div id="loading-indicator" class="hidden mt-6 flex items-center text-gray-600 dark:text-gray-400">
-                <div class="spinner mr-3"></div>
-                <span>Socrates is pondering...</span>
-            </div>
-
-            <!-- User Input Section -->
-            <div class="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <div class="mb-4">
-                    <label for="prompt-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Your Question</label>
-                    <textarea id="prompt-input" rows="4" class="w-full p-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition duration-150" placeholder="e.g., What is the derivative of x^2, and why?"></textarea>
+        <main class="space-y-12">
+            <!-- Task 1 Block -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">Task 1: Understanding Functions</h2>
+                <div class="prose prose-lg max-w-none dark:text-gray-300 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <p>Consider the rule $y = \sqrt{x}$. Is this a function? Why or why not? What is its domain (the set of allowed $x$ values)?</p>
                 </div>
-                <div class="flex justify-end">
-                    <button id="generate-button" class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 transition duration-150 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-                        Inquire
-                    </button>
+                
+                <!-- Dialogue for Task 1 -->
+                <div class="mt-6">
+                     <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-3">Our Dialogue on Task 1</h3>
+                     <div id="dialogue-history-1" class="space-y-6"></div>
+                     <div id="loading-indicator-1" class="hidden mt-6 flex items-center text-gray-600 dark:text-gray-400">
+                        <div class="spinner mr-3"></div>
+                        <span>Socrates is pondering...</span>
+                    </div>
+                     <div class="mt-6">
+                        <textarea id="prompt-input-1" rows="3" class="w-full p-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition duration-150" placeholder="Share your thoughts on Task 1..."></textarea>
+                        <div class="flex justify-end mt-2">
+                            <button data-task="1" class="generate-button bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 transition duration-150 flex items-center">Inquire</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Resource Library Section -->
-            <div class="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">Resource Library</h2>
-                <p class="text-gray-600 dark:text-gray-400 mb-6">Refresh your understanding of foundational concepts.</p>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <button data-definition="limit" class="resource-button w-full text-left p-4 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition duration-150">
-                        <h3 class="font-semibold text-gray-800 dark:text-white">What is a Limit?</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Explore the idea of approaching a value.</p>
-                    </button>
-                    <button data-definition="derivative" class="resource-button w-full text-left p-4 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition duration-150">
-                        <h3 class="font-semibold text-gray-800 dark:text-white">The Derivative</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Understand instantaneous rates of change.</p>
-                    </button>
-                    <button data-definition="integral" class="resource-button w-full text-left p-4 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition duration-150">
-                        <h3 class="font-semibold text-gray-800 dark:text-white">Understanding Integrals</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Grasp the concept of accumulation and area.</p>
-                    </button>
+            <!-- Task 2 Block -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">Task 2: Understanding Intervals</h2>
+                <div class="prose prose-lg max-w-none dark:text-gray-300 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                    <p>Describe the set of all numbers $x$ such that $-2 < x \le 5$ using interval notation. Is this interval open, closed, or half-open?</p>
+                </div>
+
+                <!-- Dialogue for Task 2 -->
+                 <div class="mt-6">
+                     <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-700 pb-3">Our Dialogue on Task 2</h3>
+                     <div id="dialogue-history-2" class="space-y-6"></div>
+                     <div id="loading-indicator-2" class="hidden mt-6 flex items-center text-gray-600 dark:text-gray-400">
+                        <div class="spinner mr-3"></div>
+                        <span>Socrates is pondering...</span>
+                    </div>
+                     <div class="mt-6">
+                        <textarea id="prompt-input-2" rows="3" class="w-full p-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none transition duration-150" placeholder="Share your thoughts on Task 2..."></textarea>
+                        <div class="flex justify-end mt-2">
+                            <button data-task="2" class="generate-button bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 transition duration-150 flex items-center">Inquire</button>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -111,81 +113,73 @@
         </main>
     </div>
 
-    <!-- Definition Modal -->
-    <div id="definition-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-2xl w-full transform transition-all duration-300 ease-out scale-95 opacity-0" id="modal-panel">
-            <div class="flex justify-between items-center mb-4 border-b border-gray-200 dark:border-gray-700 pb-3">
-                <h3 id="modal-title" class="text-2xl font-bold text-gray-800 dark:text-white"></h3>
-                <button id="modal-close-button" class="text-gray-400 hover:text-gray-700 dark:hover:text-white text-3xl font-light leading-none">&times;</button>
-            </div>
-            <div id="modal-content" class="prose prose-lg max-w-none dark:text-gray-300" style="max-height: 70vh; overflow-y: auto;"></div>
-        </div>
-    </div>
-
     <script>
-        // --- Element Selectors ---
-        const generateButton = document.getElementById('generate-button');
-        const promptInput = document.getElementById('prompt-input');
-        const dialogueContainer = document.getElementById('dialogue-container');
-        const dialogueHistoryEl = document.getElementById('dialogue-history');
-        const loadingIndicator = document.getElementById('loading-indicator');
-        const errorMessage = document.getElementById('error-message');
-        const errorText = document.getElementById('error-text');
-        
-        // --- Modal Selectors ---
-        const modal = document.getElementById('definition-modal');
-        const modalPanel = document.getElementById('modal-panel');
-        const modalTitle = document.getElementById('modal-title');
-        const modalContent = document.getElementById('modal-content');
-        const modalCloseButton = document.getElementById('modal-close-button');
-        const resourceButtons = document.querySelectorAll('.resource-button');
-
         // --- State ---
-        let chatHistory = [];
-
-        // --- Definitions Content ---
-        const definitions = {
-            limit: { title: "The Concept of a Limit", content: `In mathematics, a **limit** is the value that a function "approaches" as the input "approaches" some value. Limits are essential to calculus and are used to define continuity, derivatives, and integrals.\n\nLet's consider a function $f(x)$. The limit of $f(x)$ as $x$ approaches a value $c$ is denoted as:\n\n$$ \\lim_{x \\to c} f(x) = L $$\n\nThis means that as $x$ gets arbitrarily close to $c$, the value of $f(x)$ gets arbitrarily close to $L$. It's important to note that the function does not have to be defined at $c$ for the limit to exist.` },
-            derivative: { title: "The Definition of a Derivative", content: `The **derivative** of a function of a real variable measures the instantaneous rate of change of the function with respect to that variable. For a function $f(x)$, the derivative at a point $x$ is the slope of the tangent line to the graph of $f(x)$ at that point.\n\nThe derivative of a function $f$ at a point $x$ is commonly denoted as $f'(x)$ (read "f prime of x"). It is formally defined using limits as:\n\n$$ f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h} $$\n\nThis formula is called the **limit definition of the derivative**. It calculates the slope of the secant line between two points on the curve as the distance between them ($h$) approaches zero.` },
-            integral: { title: "Understanding Integrals", content: `An **integral** is a mathematical object that can be interpreted as an area or a generalization of area. Integrals, together with derivatives, are the fundamental objects of calculus.\n\nThe **definite integral** of a function $f(x)$ from $a$ to $b$ is written as:\n\n$$ \\int_a^b f(x) \\,dx $$\n\nThis represents the signed area of the region in the $xy$-plane that is bounded on the $x$-axis by the vertical lines $x=a$ and $x=b$, and between the graph of $f(x)$ and the $x$-axis.\n\nThe **indefinite integral**, or antiderivative, is written as:\n\n$$ \\int f(x) \\,dx $$\n\nThis represents a family of functions whose derivative is $f(x)$. The Fundamental Theorem of Calculus connects these two concepts.` }
+        let chatHistories = {
+            '1': [{ role: "model", parts: [{ text: "Greetings. Let us examine this first task together. What are your initial thoughts on the rule $y = \\sqrt{x}$?" }] }],
+            '2': [{ role: "model", parts: [{ text: "A worthy question. How shall we represent this range of numbers? What does the notation tell us?" }] }]
         };
 
         // --- Event Listeners ---
-        generateButton.addEventListener('click', handleInquiry);
-        promptInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                handleInquiry();
-            }
+        document.addEventListener('DOMContentLoaded', initializeChat);
+        document.querySelectorAll('.generate-button').forEach(button => {
+            button.addEventListener('click', () => handleInquiry(button.dataset.task));
+        });
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter' && !event.shiftKey) {
+                    event.preventDefault();
+                    handleInquiry(event.target.id.split('-')[2]);
+                }
+            });
         });
 
-        async function handleInquiry() {
+        /**
+         * Initializes the chat interfaces on page load.
+         */
+        function initializeChat() {
+            for (const task in chatHistories) {
+                const history = chatHistories[task];
+                history.forEach(message => {
+                    appendMessage(task, message.role, message.parts[0].text);
+                });
+            }
+            if (window.renderMathInElement) {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false},
+                        {left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true}
+                    ]
+                });
+            }
+        }
+
+        async function handleInquiry(task) {
+            const promptInput = document.getElementById(`prompt-input-${task}`);
             const userPrompt = promptInput.value.trim();
             if (!userPrompt) {
-                showError("A question must first be asked before a discovery can be made.");
+                showError("You must venture a thought before we can proceed.");
                 return;
             }
 
-            // Add user message to UI and history
-            appendMessage('user', userPrompt);
-            chatHistory.push({ role: "user", parts: [{ text: userPrompt }] });
-            promptInput.value = ''; // Clear input field
+            appendMessage(task, 'user', userPrompt);
+            chatHistories[task].push({ role: "user", parts: [{ text: userPrompt }] });
+            promptInput.value = '';
 
-            // Show loading state and disable button
+            const loadingIndicator = document.getElementById(`loading-indicator-${task}`);
+            const generateButton = document.querySelector(`button[data-task="${task}"]`);
             loadingIndicator.classList.remove('hidden');
-            errorMessage.classList.add('hidden');
+            document.getElementById('error-message').classList.add('hidden');
             generateButton.disabled = true;
             generateButton.classList.add('opacity-50', 'cursor-not-allowed');
 
             try {
-                await callGeminiApi();
+                await callGeminiApi(task);
             } catch (error) {
-                console.error("Error calling Gemini API:", error);
+                console.error(`Error calling Gemini API for task ${task}:`, error);
                 showError(error.message || "An unknown obstacle has appeared on our path.");
-                // Remove the failed user message from history
-                chatHistory.pop();
+                chatHistories[task].pop();
             } finally {
-                // Hide loading state and re-enable button
                 loadingIndicator.classList.add('hidden');
                 generateButton.disabled = false;
                 generateButton.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -193,16 +187,13 @@
         }
 
         /**
-         * Calls the Gemini API with the current chat history.
+         * Calls the Gemini API with the relevant chat history.
          */
-        async function callGeminiApi() {
-            const personaPrompt = `You are a Socratic calculus tutor for undergraduate students. Your name is Socrates. Your purpose is to guide students to discover answers for themselves, not to provide them directly. Always respond using the Socratic method.
-1.  **Acknowledge and Rephrase:** Start by acknowledging the student's question and perhaps rephrasing it to ensure understanding.
-2.  **Ask Guiding Questions:** Never give the final answer. Instead, ask a series of probing questions that break the problem down into smaller, manageable steps. Lead the student toward the key concepts they need to solve the problem.
-3.  **Encourage Reasoning:** Ask 'why' questions. For example, 'Why did you choose that method?' or 'What does that result tell us?'.
-4.  **Use Analogies:** If a student is stuck, use simple analogies to explain complex concepts.
-5.  **Maintain Persona:** Your tone must be patient, wise, and encouraging. Address the student as 'young scholar', 'friend', or a similar term. Frame your responses as a shared journey of discovery.
-6.  **Formatting:** For any mathematical formulas or expressions, you MUST enclose them in single dollar signs for inline math (e.g., $f(x) = x^2$) or double dollar signs for block math (e.g., $$\\int_0^1 x^2 dx$$). This is crucial for rendering.`;
+        async function callGeminiApi(task) {
+            const taskPrompts = {
+                '1': `You are a Socratic calculus tutor. Guide the student in solving Task 1: "Consider the rule y = sqrt(x). Is this a function? Why or why not? What is its domain (the set of allowed x values)?". Use the Socratic method. Never give direct answers. Ask probing questions to lead them to the solution. Maintain a patient, wise persona. Use LaTeX for math.`,
+                '2': `You are a Socratic calculus tutor. Guide the student in solving Task 2: "Describe the set of all numbers x such that -2 < x <= 5 using interval notation. Is this interval open, closed, or half-open?". Use the Socratic method. Never give direct answers. Ask probing questions to lead them to the solution. Maintain a patient, wise persona. Use LaTeX for math.`
+            };
 
             const apiKey = "AIzaSyClqwGPmPxd13JFi45j1cNsk3n6HY7--9E";
             if (apiKey === "YOUR_API_KEY_HERE") {
@@ -211,14 +202,9 @@
             }
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
-            // The entire chat history is sent, and the persona is sent as a system instruction.
             const requestBody = {
-                contents: chatHistory,
-                systemInstruction: {
-                    parts: [{
-                        text: personaPrompt
-                    }]
-                }
+                contents: chatHistories[task],
+                systemInstruction: { parts: [{ text: taskPrompts[task] }] }
             };
 
             const response = await fetch(apiUrl, {
@@ -236,9 +222,8 @@
             
             if (responseData.candidates?.[0]?.content?.parts?.[0]) {
                 const generatedText = responseData.candidates[0].content.parts[0].text;
-                // Add model message to UI and history
-                appendMessage('model', generatedText);
-                chatHistory.push({ role: "model", parts: [{ text: generatedText }] });
+                appendMessage(task, 'model', generatedText);
+                chatHistories[task].push({ role: "model", parts: [{ text: generatedText }] });
             } else {
                 console.error("Unexpected API response structure:", responseData);
                 throw new Error("Could not extract text from the API response.");
@@ -246,14 +231,13 @@
         }
         
         /**
-         * Appends a message to the dialogue UI.
+         * Appends a message to the correct dialogue UI.
          */
-        function appendMessage(role, text) {
+        function appendMessage(task, role, text) {
+            const dialogueHistoryEl = document.getElementById(`dialogue-history-${task}`);
             const messageWrapper = document.createElement('div');
-            
             const roleIndicator = document.createElement('div');
             roleIndicator.classList.add('font-bold', 'text-sm', 'mb-1', 'capitalize');
-            
             const contentDiv = document.createElement('div');
             contentDiv.classList.add('prose', 'prose-lg', 'max-w-none', 'dark:text-gray-300');
 
@@ -278,49 +262,14 @@
             messageWrapper.appendChild(roleIndicator);
             messageWrapper.appendChild(contentDiv);
             dialogueHistoryEl.appendChild(messageWrapper);
-
-            if (dialogueContainer.classList.contains('hidden')) {
-                dialogueContainer.classList.remove('hidden');
-            }
             messageWrapper.scrollIntoView({ behavior: 'smooth', block: 'end' });
         }
 
         function showError(message) {
-            errorText.textContent = message;
-            errorMessage.classList.remove('hidden');
+            const errorEl = document.getElementById('error-message');
+            errorEl.classList.remove('hidden');
+            errorEl.querySelector('span').textContent = message;
         }
-
-        // --- Modal Logic ---
-        function openModal(key) {
-            const definition = definitions[key];
-            if (!definition) return;
-            modalTitle.textContent = definition.title;
-            modalContent.innerHTML = marked.parse(definition.content);
-            if (window.renderMathInElement) {
-                window.renderMathInElement(modalContent, {
-                     delimiters: [
-                        {left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false},
-                        {left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true}
-                    ]
-                });
-            }
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modalPanel.classList.remove('scale-95', 'opacity-0');
-                modalPanel.classList.add('scale-100', 'opacity-100');
-            }, 10);
-        }
-
-        function closeModal() {
-            modalPanel.classList.remove('scale-100', 'opacity-100');
-            modalPanel.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => modal.classList.add('hidden'), 300);
-        }
-
-        resourceButtons.forEach(button => button.addEventListener('click', () => openModal(button.dataset.definition)));
-        modalCloseButton.addEventListener('click', closeModal);
-        modal.addEventListener('click', (event) => { if (event.target === modal) closeModal(); });
-        document.addEventListener('keydown', (event) => { if (event.key === "Escape" && !modal.classList.contains('hidden')) closeModal(); });
     </script>
 </body>
 </html>
