@@ -197,7 +197,17 @@
 Now, here is the student's question:`;
 
             const fullPrompt = `${personaPrompt}\n\n"${userPrompt}"`;
-            const apiKey = ""; 
+            
+            // --- API Key ---
+            // IMPORTANT: Replace "YOUR_API_KEY_HERE" with your actual Google AI Studio API key.
+            // You can get a free key from https://aistudio.google.com/app/apikey
+            const apiKey = "AIzaSyClqwGPmPxd13JFi45j1cNsk3n6HY7--9E";
+
+            if (apiKey === "YOUR_API_KEY_HERE") {
+                showError("Please replace 'YOUR_API_KEY_HERE' with your actual API key in the code.");
+                throw new Error("API key not set.");
+            }
+
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
             const requestBody = { contents: [{ parts: [{ text: fullPrompt }] }] };
@@ -294,7 +304,13 @@ Now, here is the student's question:`;
                 closeModal();
             }
         });
+
+        // This function is needed for the katex auto-render script
+        function renderMathInElement(elem, options) {
+            if (window.renderMathInElement) {
+                window.renderMathInElement(elem, options);
+            }
+        }
     </script>
 </body>
 </html>
-
