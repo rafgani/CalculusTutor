@@ -239,12 +239,14 @@ Now, here is the student's question:`;
          */
         function displayResponse(text) {
             responseOutput.innerHTML = marked.parse(text);
-            renderMathInElement(responseOutput, {
-                delimiters: [
-                    {left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false},
-                    {left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true}
-                ]
-            });
+            if (window.renderMathInElement) {
+                window.renderMathInElement(responseOutput, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false},
+                        {left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true}
+                    ]
+                });
+            }
             responseContainer.classList.remove('hidden');
         }
 
@@ -263,12 +265,14 @@ Now, here is the student's question:`;
 
             modalTitle.textContent = definition.title;
             modalContent.innerHTML = marked.parse(definition.content);
-            renderMathInElement(modalContent, {
-                 delimiters: [
-                    {left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false},
-                    {left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true}
-                ]
-            });
+            if (window.renderMathInElement) {
+                window.renderMathInElement(modalContent, {
+                     delimiters: [
+                        {left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false},
+                        {left: '\\(', right: '\\)', display: false}, {left: '\\[', right: '\\]', display: true}
+                    ]
+                });
+            }
 
             modal.classList.remove('hidden');
             // Animate modal entrance
@@ -304,13 +308,6 @@ Now, here is the student's question:`;
                 closeModal();
             }
         });
-
-        // This function is needed for the katex auto-render script
-        function renderMathInElement(elem, options) {
-            if (window.renderMathInElement) {
-                window.renderMathInElement(elem, options);
-            }
-        }
     </script>
 </body>
 </html>
